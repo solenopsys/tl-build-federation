@@ -1,0 +1,24 @@
+{
+  "name": "@solenopsys/lib-compiller",
+  "version": "0.1.3",
+  "description": "Vite plugin for Solenopsys monorepo",
+  "type": "commonjs",
+
+  "dependencies": {
+    "@angular-devkit/build-angular": "^16.2.0",
+    "@angular/compiler-cli": "^16.2.1",
+    "@babel/core": "^7.22.10",
+    "@softarc/native-federation": "^1.1.2",
+    "@softarc/native-federation-esbuild": "^1.1.2",
+    "@types/node": "^20.5.0"
+  },
+  "scripts": {
+    "build-lib": "tsx src/build-lib.ts",
+    "build-fed": "tsx src/build-packages.ts ",
+    "build-2": "tsx src/build-pack2.ts",
+    "build-3": "tsx src/build-packages.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
+}
