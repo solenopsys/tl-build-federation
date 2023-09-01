@@ -3,7 +3,7 @@ import {existsSync, readFileSync, renameSync, unlinkSync, writeFileSync} from "f
 // @ts-ignore
 import * as esbuild from "esbuild";
 import {dirname} from "path";
-const  federationConfig = "federation.config.js";
+const  federationConfig = "federation.config.cjs";
 
 
 import {PluginItem, transformAsync} from "@babel/core";
@@ -205,11 +205,25 @@ export function buildModule(fedConfig: NormalizedFederationConfig, externals: st
 
 }
 
+const programArgument=process.argv[2];
+
+if (!programArgument) {
+    console.log("Missing argument: module name")
+    process.exit(1)
+}
 
 
-const config="../../federation.config.cjs"
-import(config).then((mod) => {
-    const {federationConfig, externals, name} = mod.load("@solenopsys/mf-people");
+const path = require('path');
+
+// Get the current directory's path
+const currentDir = process.cwd();
+
+// Construct the full path to the helper.js module
+const configPath ="file://"+ path.join(currentDir, federationConfig);
+
+
+import(configPath).then((mod) => {
+    const {federationConfig, externals, name} = mod.load(  programArgument);
 
     buildModule(federationConfig, externals,name)
 })
