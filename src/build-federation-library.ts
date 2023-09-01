@@ -1,7 +1,9 @@
 import {BuildAdapter, logger, MappedPath, setBuildAdapter} from "@softarc/native-federation/src/build.js";
 import {existsSync, readFileSync, renameSync, unlinkSync, writeFileSync} from "fs";
+// @ts-ignore
 import * as esbuild from "esbuild";
 import {dirname} from "path";
+const  federationConfig = "federation.config.js";
 
 
 import {PluginItem, transformAsync} from "@babel/core";
@@ -9,6 +11,13 @@ import {getSupportedBrowsers} from "@angular-devkit/build-angular/src/utils/supp
 import {createCompilerPlugin} from "@angular-devkit/build-angular/src/tools/esbuild/angular/compiler-plugin.js";
 import {BuildKind} from "@softarc/native-federation/src/lib/core/build-adapter.js";
 import {transformSupportedBrowsersToTargets} from "@angular-devkit/build-angular/src/tools/esbuild/utils";
+
+import {
+    buildForFederation,
+    FederationOptions,
+    NormalizedFederationConfig
+} from "@softarc/native-federation/src/build.js";
+import * as process from "process";
 
 
 
@@ -150,8 +159,8 @@ export async function runEsbuild(
                     inlineStyleLanguage: inlineStyleLanguage,
                     target: target,
                     outputNames: {
-                        bundles: "okBundles",
-                        media: "okMedia"
+                        bundles: "okBundles", // todo fix it
+                        media: "okMedia" // todo fix it
                     }
                 }
             ),
@@ -168,3 +177,39 @@ export async function runEsbuild(
     await esbuild.build(config);
 
 }
+
+
+
+
+export function buildModule(fedConfig: NormalizedFederationConfig, externals: string[],nameLib:string){
+    const workspaceRoot = process.cwd();
+    registerEsbuildAdapter(workspaceRoot, workspaceRoot)
+
+    const subDist = nameLib.replace("@", "")
+
+
+    const fedOptions: FederationOptions = {
+        workspaceRoot: workspaceRoot,
+        outputPath: "./dist/" + subDist,
+        federationConfig: federationConfig,
+        tsConfig: "./tsconfig.json",
+    }
+
+    buildForFederation(
+        fedConfig,
+        fedOptions,
+        externals
+    ).then(r => {
+        console.log("DONE", r)
+    });
+
+}
+
+
+
+const config="../../federation.config.cjs"
+import(config).then((mod) => {
+    const {federationConfig, externals, name} = mod.load("@solenopsys/mf-people");
+
+    buildModule(federationConfig, externals,name)
+})
