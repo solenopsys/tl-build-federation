@@ -3,7 +3,7 @@ import {existsSync, readFileSync, renameSync, unlinkSync, writeFileSync} from "f
 // @ts-ignore
 import * as esbuild from "esbuild";
 import {dirname} from "path";
-const  federationConfig = "federation.config.cjs";
+const  federationConfig = "configurations/federation/base.cjs";
 
 
 import {PluginItem, transformAsync} from "@babel/core";

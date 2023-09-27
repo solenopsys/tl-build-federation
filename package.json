@@ -1,6 +1,6 @@
 {
   "name": "@solenopsys/build-federation",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Build federation",
   "type": "commonjs",
   "main": "dist/index.js",
@@ -19,7 +19,7 @@
     "pub": "pnpm build && pnpm publish dist --no-git-checks --access=public"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.22.11",
+    "@babel/preset-typescript": "^7.23.0",
     "esbuild": "0.18.17",
     "typescript": "5.1.6"
   }
