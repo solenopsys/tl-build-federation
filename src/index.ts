@@ -28,7 +28,9 @@ export function loadEsmModule<T>(modulePath: string | URL): Promise<T> {
 }
 
 export function registerEsbuildAdapter(wsRoot: string, projectDid: string) {
+
     const esBuildAdapter: BuildAdapter = async (options) => {
+
 
         const {
             entryPoint,
@@ -40,6 +42,7 @@ export function registerEsbuildAdapter(wsRoot: string, projectDid: string) {
             watch,
             dev
         } = options;
+
         await buildItem(entryPoint, tsConfigPath, external, outfile, mappedPaths, kind, projectDid, wsRoot);
     };
 
@@ -53,7 +56,6 @@ export async function link(outfile: string) {
     const code = readFileSync(outfile, 'utf-8');
 
     try {
-        console.log("LINK")
         const linkerEsm = await loadEsmModule<{
             default: PluginItem
         }>(
@@ -110,7 +112,9 @@ export async function buildItem(
     );
 
     if (kind === 'shared-package' && existsSync(outfile)) {
+        console.log("Start likage shared-package ",outfile)
         await link(outfile);
+        console.log("End likage ",outfile)
     }
 }
 
@@ -130,6 +134,8 @@ export async function runEsbuild(
     const projectRoot = dirname(tsConfigPath);
     const browsers = getSupportedBrowsers(projectRoot, logger);
     const target = transformSupportedBrowsersToTargets(browsers);
+
+
 
     const config: esbuild.BuildOptions = {
         entryPoints: [entryPoint],
@@ -192,16 +198,14 @@ export function buildModule(fedConfig: NormalizedFederationConfig, externals: st
         workspaceRoot: workspaceRoot,
         outputPath: "./dist/" + subDist,
         federationConfig: federationConfig,
-        tsConfig: "./tsconfig.json",
+        tsConfig: "tsconfig.json",
     }
 
-    buildForFederation(
+  return   buildForFederation(
         fedConfig,
         fedOptions,
         externals
-    ).then(r => {
-        console.log("DONE", r)
-    });
+    )
 
 }
 
@@ -221,9 +225,13 @@ const currentDir = process.cwd();
 // Construct the full path to the helper.js module
 const configPath ="file://"+ path.join(currentDir, federationConfig);
 
+async function  processing(){
+    const mod = await import(configPath)
 
-import(configPath).then((mod) => {
     const {federationConfig, externals, name} = mod.load(  programArgument);
+    const res = await buildModule(federationConfig, externals,name)
+    console.log("DONE BUILD FED")
+}
 
-    buildModule(federationConfig, externals,name)
-})
+processing()
+
