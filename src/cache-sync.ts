@@ -1,11 +1,15 @@
-const {exec} = require("child_process");
+import { exec } from "child_process";
+import util from 'util';
 
-
-const util = require('util');
 const execAsync = util.promisify(exec);
 
-function extractor(resultWrapper) {
-    return (error, stdout, stderr) => {
+interface ResultWrapper {
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+}
+
+function extractor(resultWrapper: ResultWrapper) {
+    return (error: Error | null, stdout: string, stderr: string) => {
         if (error) {
             console.error(`Error executing pnpm list: ${error.message}`);
             resultWrapper.reject(error); // Reject the promise on error
@@ -34,23 +38,24 @@ function extractor(resultWrapper) {
     };
 }
 
-
 async function getDeps() {
-    const extractDeps = new Promise((resolve, reject) => {
-        const resultWrapper = {resolve, reject};
+    const extractDeps = new Promise<string>((resolve, reject) => {
+        const resultWrapper = { resolve, reject };
         const callback = extractor(resultWrapper);
 
         // Execute the pnpm list command and wait for it to complete
         execAsync('pnpm list --json ', callback);
     });
-    const res = await extractDeps
+    const res = await extractDeps;
 
-    mp = {}
+    const externals: string[] = []; // Define the 'externals' array if it's missing
+
+    const mp: { [key: string]: string } = {};
     for (const external of externals) {
-        const obj = res[external]
+        const obj = res[external];
         if (obj !== undefined) {
             let name = obj.from.replace("@", "_").replace("/", "_").replaceAll("-", "_") + "-" + obj.version.replaceAll(".", "_");
-            mp[external] = name + ".js"
+            mp[external] = name + ".js";
         }
     }
     return mp;
@@ -58,27 +63,25 @@ async function getDeps() {
 
 async function genCacheFile() {
     let deps = await getDeps();
-    console.log(deps)
-// save to file
+    console.log(deps);
+
+    // save to file
     const fs = require('fs');
-    const dir = ".xs"
+    const dir = ".xs";
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
 
-    let jsonString = JSON.stringify(deps, null, 2)
-    fs.writeFile(dir + "/cache.json", jsonString, function (err) {
+    let jsonString = JSON.stringify(deps, null, 2);
+    fs.writeFile(dir + "/cache.json", jsonString, (err) => {
         if (err) {
             console.log(err);
         }
     });
 }
 
-
 genCacheFile().then(
     () => console.log("ok")
-).catch((err) => {
-    console.log("error")
-});
-
-
+    ).catch((err) => {
+        console.log("error");
+    });
