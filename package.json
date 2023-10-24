@@ -16,13 +16,15 @@
   },
   "scripts": {
     "build-index": " esbuild ./src/index.ts --bundle  --platform=node --outfile=dist/index.js --packages=external && cp package.json dist/package.json  ",
-    "build-cache":"esbuild ./src/cache-sync.ts --bundle  --platform=node --outfile=dist/cache-sync.js",
-    "build" : "pnpm build-index && pnpm build-cache",
+    "build-cache": "esbuild ./src/cache-sync.ts --bundle  --platform=node --outfile=dist/cache-sync.js",
+    "build": "pnpm build-index && pnpm build-cache",
     "pub": "pnpm build && pnpm publish dist --no-git-checks --access=public"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.0",
     "esbuild": "0.18.17",
-    "typescript": "5.1.6"
+    "typescript": "5.1.6",
+    "jsdom": "^22.1.0"
   }
+
 }
