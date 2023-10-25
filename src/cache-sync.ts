@@ -41,7 +41,7 @@ function extractor(resultWrapper: ResultWrapper) {
 async function getDeps() {
     const extractDeps = new Promise<string>((resolve, reject) => {
         const resultWrapper = { resolve, reject };
-        const callback = extractor(resultWrapper);
+        const callback:any = extractor(resultWrapper);
 
         // Execute the pnpm list command and wait for it to complete
         execAsync('pnpm list --json ', callback);
