@@ -1,4 +1,6 @@
 import {BuildAdapter, logger, MappedPath, setBuildAdapter} from "@softarc/native-federation/src/build.js";
+import {EntryPoint} from "@softarc/native-federation/src/lib/core/build-adapter.d";
+
 import {existsSync, readFileSync,readdirSync, renameSync, unlinkSync, writeFileSync} from "fs";
 // @ts-ignore
 import * as esbuild from "esbuild";
@@ -18,6 +20,7 @@ import {
     NormalizedFederationConfig
 } from "@softarc/native-federation/src/build.js";
 import * as process from "process";
+import {BuildResult} from "esbuild";
 
 
 
@@ -30,21 +33,21 @@ export function loadEsmModule<T>(modulePath: string | URL): Promise<T> {
 
 export function registerEsbuildAdapter(wsRoot: string, projectDid: string) {
 
-    const esBuildAdapter: BuildAdapter = async (options) => {
+    const esBuildAdapter: BuildAdapter = async (options):Promise<BuildAdapter|any> => {
 
 
         const {
-            entryPoint,
+            entryPoints,
             tsConfigPath,
             external,
-            outfile,
+            outdir,
             mappedPaths,
             kind,
             watch,
             dev
         } = options;
 
-        await buildItem(entryPoint, tsConfigPath, external, outfile, mappedPaths, kind, projectDid, wsRoot);
+        await buildItem(entryPoints, tsConfigPath, external, outdir, mappedPaths, kind, projectDid, wsRoot);
     };
 
     setBuildAdapter(
@@ -90,10 +93,10 @@ export async function link(outfile: string) {
 
 
 export async function buildItem(
-    entryPoint: string,
+    entryPoints: EntryPoint[],
     tsConfigPath: string,
     external: string[],
-    outfile: string,
+    outdir: string,
     mappedPaths: MappedPath[],
     kind: BuildKind,
     workingDir: string, wsRoot: string) {
@@ -101,9 +104,9 @@ export async function buildItem(
 
     await runEsbuild(
         "scss",
-        entryPoint,
+        entryPoints[0].fileName,
         external,
-        outfile,
+        outdir,
         tsConfigPath,
         mappedPaths,
         workingDir,
@@ -112,10 +115,10 @@ export async function buildItem(
         wsRoot
     );
 
-    if (kind === 'shared-package' && existsSync(outfile)) {
-        console.log("Start likage shared-package ",outfile)
-        await link(outfile);
-        console.log("End likage ",outfile)
+    if (kind === 'shared-package' && existsSync(outdir)) {
+        console.log("Start likage shared-package ",outdir)
+        await link(outdir);
+        console.log("End likage ",outdir)
     }
 }
 
@@ -241,7 +244,7 @@ function findIndexFileByPrefix(distPath :string, prefix :string): string{
     }
 }
 
-export async function  buildMicrofrontend(){
+export async function  buildMicroFrontend(){
     const mod = await import(configPath)
 
     const {federationConfig, externals, name} = mod.load(  programArgument);

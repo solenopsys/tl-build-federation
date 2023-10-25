@@ -1,9 +1,10 @@
 import http from "http";
 import * as https from "https";
+import * as esbuild from "esbuild";
+import jsdom from "jsdom";
 
-const fs = require('fs');
-const esbuild = require('esbuild');
-const jsdom = require("jsdom");
+import fs from "fs";
+
 const {JSDOM} = jsdom;
 
 const indexHtml = "index.html";
@@ -21,7 +22,7 @@ const distEntry = outputPath + "/" + entryJson;
 const ipfsUrl="https://zero.node.solenopsys.org"
 const pinningServiceURL="http://pinning.solenopsys.org"
 
-export function buildBootstrap() {
+export function copyFiles():string {
 
     if (!fs.existsSync(srcPath)) {
         console.error("bootstrap source folder not found", srcPath)
@@ -145,8 +146,8 @@ async function genModulesJson() {
     fs.writeFileSync(outputPath + "/modules.json", JSON.stringify(modulesMapping), 'utf8');
 }
 
-async function build() {
-    const indexTs = buildBootstrap();
+export async function buildBootstrap() {
+    const indexTs = copyFiles();
     await buildEsbuild(outputPath, indexTs);
     await genModulesJson();
 }
@@ -165,4 +166,3 @@ function loadEntryModules() {
 }
 
 
-build();

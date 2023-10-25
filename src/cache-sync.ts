@@ -61,7 +61,7 @@ async function getDeps() {
     return mp;
 }
 
-async function genCacheFile() {
+export async function genCacheFile() {
     let deps = await getDeps();
     console.log(deps);
 
@@ -79,9 +79,3 @@ async function genCacheFile() {
         }
     });
 }
-
-genCacheFile().then(
-    () => console.log("ok")
-    ).catch((err) => {
-        console.log("error");
-    });
