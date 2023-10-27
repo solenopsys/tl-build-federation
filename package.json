@@ -7,21 +7,21 @@
   "types": "dist/index.d.ts",
   "author": "Solenopsys",
   "peerDependencies": {
-    "@angular-devkit/build-angular": "^16.2.1",
-    "@angular/compiler-cli": "^16.2.3",
+    "@angular-devkit/build-angular": "^16.2.8",
+    "@angular/compiler-cli": "^16.2.11",
     "@babel/core": "^7.22.11",
     "@softarc/native-federation": "^2.0.4",
     "@softarc/native-federation-esbuild": "^2.0.4",
-    "@types/node": "^20.5.7"
+    "@types/node": "^20.8.9"
   },
   "scripts": {
-    "build-index": " esbuild ./src/index.ts --bundle  --platform=node --outfile=dist/index.js --packages=external && cp package.json dist/package.json  ",
+    "build-index": " esbuild ./src/index.ts --bundle  --platform=node --outfile=dist/index.js --packages=external ",
     "pub": "pnpm build-index && pnpm publish dist --no-git-checks --access=public"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.2",
-    "esbuild": "0.18.17",
-    "typescript": "5.1.6"
+    "esbuild": "0.19.5",
+    "typescript": "5.2.2"
   },
   "dependencies": {
     "jsdom": "^22.1.0",
