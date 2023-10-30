@@ -1,7 +1,8 @@
 import process from "process";
 import {CacheSyncBuilder} from "./builders/cache-sync";
-import {MicroFrontendBuilder} from "./builders/build-micro-frontend";
-import {BootstrapBuild} from "./builders/build-bootstrap";
+
+import {MicroFrontendBuilder} from "./builders/build-microfrontend";
+import {BootstrapBuilder} from "./builders/build-bootstrap";
 
 
 const jobName = process.argv[2]
@@ -17,8 +18,8 @@ if (!moduleName) {
 }
 
 
-const builders: { [key: string]: Builder } = {
-    "bootstrap": new BootstrapBuild(moduleName),
+const builders: { [key: string]: BuilderInterface } = {
+    "bootstrap": new BootstrapBuilder(moduleName),
     "cache-sync": new CacheSyncBuilder(),
     "microfrontend": new MicroFrontendBuilder(moduleName),
 }

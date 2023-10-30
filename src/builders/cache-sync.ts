@@ -2,15 +2,12 @@ import {exec} from "child_process";
 import util from 'util';
 
 const execAsync = util.promisify(exec);
-
-
 interface ResultWrapper {
     resolve: (value?: any) => void;
     reject: (reason?: any) => void;
 }
 
-
-export class CacheSyncBuilder implements Builder {
+export class CacheSyncBuilder implements BuilderInterface {
     build(): Promise<any> {
         return this.genCacheFile();
     }

@@ -2,26 +2,20 @@ import http from "http";
 import * as https from "https";
 import * as esbuild from "esbuild";
 import jsdom from "jsdom";
-
 import fs from "fs";
-import {BuildResult} from "esbuild";
-
 const {JSDOM} = jsdom;
-
 const indexHtml = "index.html";
 const counterHtml = "counter.html";
 const entryJson = "entry.json";
 const indexJs = "index.js";
 const baseName = "bootstraps";
 const distDir = "./dist/" + baseName + "/"
-
-
 const ipfsUrl = "https://zero.node.solenopsys.org"
 const pinningServiceURL = "http://pinning.solenopsys.org"
 
 type Entry = { layout: { module: string }, routes: { [path: string]: { module: string } } };
 
-export class BootstrapBuild implements Builder {
+export class BootstrapBuilder implements BuilderInterface {
     outputPath:string
     srcPath:string
     srcEntry:string

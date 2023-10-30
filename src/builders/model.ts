@@ -1,5 +1,5 @@
 
 
-interface Builder{
+interface BuilderInterface{
      build(): Promise<any>;
 }
