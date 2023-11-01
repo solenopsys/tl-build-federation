@@ -55,6 +55,8 @@ export class BuildController {
     ): Promise<Array<SharedInfo>> {
         fs.mkdirSync(this.cachePath, {recursive: true});
 
+
+
         const allEntryPoints = packageInfos.map((pi) => {
             const encName = pi.packageName.replace(/[^A-Za-z0-9]/g, '_');
             if(!pi.version) throw new Error("No version found for "+pi.packageName)
@@ -83,10 +85,10 @@ export class BuildController {
 
 
         return packageInfos.map((pi) => {
-            // const shared = config.shared[pi.packageName];
+            const outName=path.basename(allEntryPoints.find((ep) => ep.fileName === pi.entryPoint)?.outName || "")
             return {
                 packageName: pi.packageName,
-                // outFileName: path.basename(outFileNames.shift() || ''),
+                 outFileName: outName,
                 // requiredVersion: shared.requiredVersion,
                 // singleton: shared.singleton,
                 // strictVersion: shared.strictVersion,

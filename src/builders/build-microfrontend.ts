@@ -1,6 +1,17 @@
 import {PackageInfo, SharedInfo} from "./microfrontend/types";
 import {BuildController} from "./microfrontend/build-controller";
 import {extractParamsFromNodeModule, extractSharedFromPackageJson} from "./microfrontend/extractors";
+import fs from "fs";
+
+function sharedInfosToImportMapJson(sharedInfos: SharedInfo[]): Object {
+    const imports:{[name:string]:string} = {}
+    for (const sharedInfo of sharedInfos) {
+        imports[sharedInfo.packageName] ="/shared/"+ sharedInfo.outFileName
+    }
+    return {
+        imports
+    }
+}
 
 export class MicroFrontendBuilder implements BuilderInterface {
 
@@ -30,13 +41,23 @@ export class MicroFrontendBuilder implements BuilderInterface {
         }
 
         const bc = new BuildController("./tsconfig.json", "./dist/shared/", mappedPaths)
-        let sharedInfos = await bc.bundleShared(packageInfos, externals);
+        let sharedInfos:SharedInfo[] = await bc.bundleShared(packageInfos, externals);
 
-        const sharedPath = "./dist/shared/"
         const results = await bc.buildMain(
             externals,
             module
         )
+
+
+
+        console.log("Results", results)
+        console.log("Shared Infos", sharedInfos)
+
+        const importMapPath = "./dist/modules/"+this.modulePath+"/importmap.json"
+
+        let importMapObj = sharedInfosToImportMapJson(sharedInfos);
+
+        fs.writeFileSync(importMapPath, JSON.stringify(importMapObj, null, 2));
 
         return sharedInfos
     }
@@ -50,7 +71,7 @@ export class MicroFrontendBuilder implements BuilderInterface {
         const sharedProject = extractSharedFromPackageJson(modulePackageJsonPath)
         const externals = [...sharedMain, ...sharedProject]
 
-        console.log("SHARED", externals)
+
         return this.runBuilder(this.modulePath, externals)
     }
 

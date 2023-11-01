@@ -1,6 +1,5 @@
 import process from "process";
 import {CacheSyncBuilder} from "./builders/cache-sync";
-
 import {MicroFrontendBuilder} from "./builders/build-microfrontend";
 import {BootstrapBuilder} from "./builders/build-bootstrap";
 
@@ -35,4 +34,7 @@ switch (jobName) {
         process.exit(1);
 }
 
-builder.build();
+builder.build().then(() => {
+    console.log("Build finished")
+    process.exit(0)
+});
