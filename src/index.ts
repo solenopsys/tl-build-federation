@@ -12,23 +12,27 @@ if (!jobName) {
 }
 
 const moduleName = process.argv[3];
-if (!moduleName) {
+if ("cache-sync"!=jobName && !moduleName) {
     console.log("Missing argument: build name")
     process.exit(1)
 }
 
 
-const builders: { [key: string]: BuilderInterface } = {
-    "bootstrap": new BootstrapBuilder(moduleName),
-    "cache-sync": new CacheSyncBuilder(),
-    "microfrontend": new MicroFrontendBuilder(moduleName),
+let builder: BuilderInterface | undefined;
+
+switch (jobName) {
+    case "bootstrap":
+        builder = new BootstrapBuilder(moduleName);
+        break;
+    case "cache-sync":
+        builder = new CacheSyncBuilder();
+        break;
+    case "microfrontend":
+        builder = new MicroFrontendBuilder(moduleName);
+        break;
+    default:
+        console.error("job not found");
+        process.exit(1);
 }
 
-const builder = builders[jobName]
-
-if (!builder) {
-    console.error("job not found")
-    process.exit(1)
-}
-
-builder.build()
+builder.build();

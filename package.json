@@ -13,9 +13,8 @@
     "@types/node": "^20.8.9"
   },
   "scripts": {
-    "build-index": " esbuild ./src/index.ts --bundle  --platform=node --outfile=dist/index.js --packages=external ",
-    "pub": "pnpm build-index && pnpm publish dist --no-git-checks --access=public",
-    "tb": "tsx ./src/run.ts"
+    "build-index": " esbuild ./src/index.ts --bundle  --platform=node --outfile=dist/index.js --packages=external  && cp package.json dist/package.json ",
+    "pub": "pnpm build-index && pnpm publish dist --no-git-checks --access=public"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.23.2",

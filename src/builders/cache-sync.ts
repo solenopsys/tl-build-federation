@@ -50,7 +50,9 @@ export class CacheSyncBuilder implements BuilderInterface {
             // Execute the pnpm list command and wait for it to complete
             execAsync('pnpm list --json ', callback);
         });
+
         const res = await extractDeps;
+        console.log("EXTARCT DEPS", res);
 
         const externals: string[] = []; // Define the 'externals' array if it's missing
 
