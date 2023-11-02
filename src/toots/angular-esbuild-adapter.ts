@@ -9,7 +9,7 @@ import {normalizeOptimization, normalizeSourceMaps} from '@angular-devkit/build-
 import {createRequire} from 'node:module';
 import {createSharedMappingsPlugin} from './shared-mappings-plugin';
 import {PluginItem, transformAsync} from '@babel/core';
-import {BuildAdapter, BuildKind, BuildResult, EntryPoint, MappedPath, PluginOptions} from "./model";
+import {BuildAdapter, BuildKind, Result, EntryPoint, MappedPath, PluginOptions} from "../types";
 
 export function createAngularBuildAdapter(
     pluginOptions: PluginOptions
@@ -46,7 +46,7 @@ export function createAngularBuildAdapter(
             }
         }
 
-        return files.map((fileName) => ({fileName} as BuildResult));
+        return files.map((fileName) => ({fileName} as Result));
     };
 
     async function link(outfile: string) {
@@ -175,6 +175,7 @@ async function runEsbuild(
         platform: 'browser',
         format: 'esm',
         target: ['esnext'],
+        //@ts-ignore
         plugins: plugins || [
             createCompilerPlugin(
                 pluginOptions.pluginOptions,

@@ -1,6 +1,6 @@
 import { Plugin, PluginBuild } from 'esbuild';
 import * as path from 'path';
-import {MappedPath} from "./model";
+import {MappedPath} from "../types";
 
 export function createSharedMappingsPlugin(mappedPaths: MappedPath[]): Plugin {
   return {

@@ -2,6 +2,8 @@ import process from "process";
 import {CacheSyncBuilder} from "./builders/cache-sync";
 import {MicroFrontendBuilder} from "./builders/build-microfrontend";
 import {BootstrapBuilder} from "./builders/build-bootstrap";
+import {BuilderInterface} from "./types";
+
 
 
 const jobName = process.argv[2]
@@ -17,7 +19,7 @@ if ("cache-sync"!=jobName && !moduleName) {
 }
 
 
-let builder: BuilderInterface | undefined;
+let builder: BuilderInterface<any> | undefined;
 
 switch (jobName) {
     case "bootstrap":

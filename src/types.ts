@@ -18,6 +18,9 @@ export interface PackageInfo {
     esm: boolean;
 }
 
+export interface BuilderInterface<T>{
+    build(): Promise<T>;
+}
 export interface FederationOptions {
     workspaceRoot: string;
     outputPath: string;
@@ -71,10 +74,10 @@ export interface EntryPoint {
 
 export type BuildAdapter = (
     options: BuildAdapterOptions
-) => Promise<BuildResult[]>;
+) => Promise<Result[]>;
 
 
-export interface BuildResult {
+export interface Result {
     fileName: string;
 }
 
@@ -100,3 +103,5 @@ export class EventHub implements EventSource {
 export class RebuildHubs implements RebuildEvents {
     readonly rebuild = new EventHub();
 }
+
+export  const PACKAGE_JSON = "package.json"

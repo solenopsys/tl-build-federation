@@ -1,5 +1,6 @@
 import {exec} from "child_process";
 import util from 'util';
+import {BuilderInterface} from "../types";
 
 const execAsync = util.promisify(exec);
 interface ResultWrapper {
@@ -7,9 +8,24 @@ interface ResultWrapper {
     reject: (reason?: any) => void;
 }
 
-export class CacheSyncBuilder implements BuilderInterface {
-    build(): Promise<any> {
-        return this.genCacheFile();
+export class CacheSyncBuilder implements BuilderInterface<any> {
+   async build(): Promise<any> {
+       let deps = await this.getDeps();
+       console.log(deps);
+
+       // save to file
+       const fs = require('fs');
+       const dir = ".xs";
+       if (!fs.existsSync(dir)) {
+           fs.mkdirSync(dir);
+       }
+
+       let jsonString = JSON.stringify(deps, null, 2);
+       return fs.writeFile(dir + "/cache.json", jsonString, (err) => {
+           if (err) {
+               console.log(err);
+           }
+       });
     }
 
     extractor(resultWrapper: ResultWrapper) {
@@ -65,24 +81,5 @@ export class CacheSyncBuilder implements BuilderInterface {
             }
         }
         return mp;
-    }
-
-    async genCacheFile() {
-        let deps = await this.getDeps();
-        console.log(deps);
-
-        // save to file
-        const fs = require('fs');
-        const dir = ".xs";
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-        }
-
-        let jsonString = JSON.stringify(deps, null, 2);
-        fs.writeFile(dir + "/cache.json", jsonString, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
     }
 }
