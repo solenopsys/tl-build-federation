@@ -7,6 +7,8 @@ import {BuilderInterface, PACKAGE_JSON, SharedInfo} from "../types";
 import {extractSharedFromPackageJson} from "../toots/extractors";
 import {SharedBuilder} from "./build-shared";
 import {sharedInfosToImportMapJson} from "../toots/convertors";
+import {loadListMicroFrontends} from "../toots/pinning";
+import {fetchImportMap, ipfsUrl} from "../toots/ipfs";
 
 const {JSDOM} = jsdom;
 const indexHtml = "index.html";
@@ -15,8 +17,7 @@ const entryJson = "entry.json";
 const indexJs = "index.js";
 const baseName = "bootstraps";
 const distDir = "./dist/" + baseName + "/"
-const ipfsUrl = "https://zero.node.solenopsys.org"
-const pinningServiceURL = "http://pinning.solenopsys.org"
+
 
 type Entry = {
     layout: {
@@ -123,43 +124,13 @@ export class BootstrapBuilder implements BuilderInterface<any> {
     }
 
 
-    fetchData(url: string): Promise<any> {
-        return new Promise<string>((resolve, reject) => {
 
-
-            const isHttps = url.startsWith('https');
-            const request = (isHttps ? https : http).get(url, (response) => {
-                let data = '';
-
-                // Handle data chunks as they come in
-                response.on('data', (chunk) => {
-                    data += chunk;
-                });
-
-                // Handle the end of the response
-                response.on('end', () => {
-                    resolve(data);
-                });
-            });
-
-            // Handle errors
-            request.on('error', (error) => {
-                reject(error);
-            });
-        });
-    }
 
 
     async genModulesJson() {
         const modulesNames = this.loadEntryModules()
-        const modulesUrl = pinningServiceURL + '/select/names?value=microfrontend'
-        const modulesLinks: {
-            [key: string]: {
-                name: string,
-                type: string,
-                version: string
-            }
-        } = JSON.parse(await this.fetchData(modulesUrl))
+
+        const modulesLinks = await loadListMicroFrontends();
         const modulesMapping: {
             [key: string]: string
         } = {};
@@ -168,8 +139,7 @@ export class BootstrapBuilder implements BuilderInterface<any> {
             for (const moduleName of modulesNames) {
                 if (moduleName == modulesLinks[cid].name) {
                     const cidURL = ipfsUrl + "/ipns/" + cid + "/"
-                    const importMapUrl = cidURL + "importmap.json";
-                    const importMap = JSON.parse(await this.fetchData(importMapUrl)).imports;
+                    const importMap=await fetchImportMap(cidURL)
                     modulesMapping[moduleName] = cidURL + importMap[moduleName];
                 }
             }

@@ -25,6 +25,8 @@ export function extractParamsFromNodeModule(packageName: string): { version: str
             let extractTop = extractFromPackageJson(pathToPackageJsonParent);
             extract.version = extractTop.version;
         }
+        console.log("INFO")
+        console.log(nodeDir, extract.module)
         let file= path.join(nodeDir, extract.module) ;
         if (subPackage){
             if( extract.exports){

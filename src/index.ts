@@ -1,5 +1,4 @@
 import process from "process";
-import {CacheSyncBuilder} from "./builders/cache-sync";
 import {MicroFrontendBuilder} from "./builders/build-microfrontend";
 import {BootstrapBuilder} from "./builders/build-bootstrap";
 import {BuilderInterface} from "./types";
@@ -24,9 +23,6 @@ let builder: BuilderInterface<any> | undefined;
 switch (jobName) {
     case "bootstrap":
         builder = new BootstrapBuilder(moduleName);
-        break;
-    case "cache-sync":
-        builder = new CacheSyncBuilder();
         break;
     case "microfrontend":
         builder = new MicroFrontendBuilder(moduleName);

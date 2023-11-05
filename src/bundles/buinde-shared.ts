@@ -1,8 +1,48 @@
 import fs from "fs";
 import path from "path";
-import {PackageInfo, SharedInfo} from "../types";
+import {EntryPoint, PackageInfo, SharedInfo} from "../types";
 import {BundleController} from "../toots/bundle-controller";
+import * as os from "os";
+import {loadSharedLibs, loadSharedMap} from "../toots/pinning";
+import {loadFileFromIpfs} from "../toots/ipfs";
 
+
+function saveUploadFile(ep: EntryPoint[]) {
+    const forUpload: {
+        [packName: string]: string
+    } = {};
+    for (const e of ep) {
+        forUpload[e.packageName] = e.outName
+    }
+    const fs = require('fs');
+    const dir = ".xs";
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    let jsonString = JSON.stringify(forUpload, null, 2);
+    return fs.writeFileSync(dir + "/to-upload.json", jsonString, 'utf8');
+}
+
+async function tryDownloadFromRemote(entryPoints: EntryPoint[]): Promise<EntryPoint[]> {
+    const toGenerate: EntryPoint[] = []
+
+    if (entryPoints.length > 0) {
+        const map = await loadSharedMap()
+
+        for (const ep of entryPoints) {
+
+            const existsInRemote = map[ep.outName]
+            if (existsInRemote) {
+                console.log("Download library", ep)
+                await loadFileFromIpfs(existsInRemote,"./dist/shared/"+ ep.outName); //todo const
+            } else {
+                toGenerate.push(ep)
+            }
+        }
+    }
+
+    return toGenerate
+}
 
 export async function bundleShared(
     bc: BundleController,
@@ -17,16 +57,21 @@ export async function bundleShared(
         if (!pi.version) throw new Error("No version found for " + pi.packageName)
         const encVersion = pi.version.replace(/[^A-Za-z0-9]/g, '_');
         const outName = `${encName}-${encVersion}.js`;
-        return {fileName: pi.entryPoint, outName};
+        return {fileName: pi.entryPoint, outName, packageName: pi.packageName};
     });
 
     const entryPoints = allEntryPoints.filter(
         (ep) => !fs.existsSync(path.join(bc.cachePath, ep.outName))
     );
 
+    const toGenerate = await tryDownloadFromRemote(entryPoints)
+
+    saveUploadFile(toGenerate);
+
+
     try {
         await bc.bundle({
-            entryPoints,
+            entryPoints: toGenerate,
             tsConfigPath: bc.tsConfig,
             external: externals,
             outdir: bc.cachePath,

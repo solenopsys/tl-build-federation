@@ -68,6 +68,7 @@ export type BuildKind =
     | 'mapping-or-exposed';
 
 export interface EntryPoint {
+    packageName: string;
     fileName: string;
     outName: string;
 }
