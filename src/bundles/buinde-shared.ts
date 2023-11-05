@@ -8,19 +8,28 @@ import {loadFileFromIpfs} from "../toots/ipfs";
 
 
 function saveUploadFile(ep: EntryPoint[]) {
-    const forUpload: {
-        [packName: string]: string
-    } = {};
-    for (const e of ep) {
-        forUpload[e.packageName] = e.outName
-    }
     const fs = require('fs');
     const dir = ".xs";
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
+    let file = dir + "/to-upload.json";
+
+    let forUpload: {
+        [packName: string]: string
+    } = {};
+
+    if(fs.existsSync(file)){
+        let json = fs.readFileSync(file, 'utf8');
+        forUpload = JSON.parse(json);
+    }
+
+    for (const e of ep) {
+        forUpload[e.packageName] = e.outName
+    }
+
     let jsonString = JSON.stringify(forUpload, null, 2);
-    return fs.writeFileSync(dir + "/to-upload.json", jsonString, 'utf8');
+    return fs.writeFileSync(file, jsonString, 'utf8');
 }
 
 async function tryDownloadFromRemote(entryPoints: EntryPoint[]): Promise<EntryPoint[]> {
