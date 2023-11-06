@@ -26,7 +26,10 @@ export class MicroFrontendBuilder implements BuilderInterface<Result[]> {
         const sharedProject = extractSharedFromPackageJson(modulePackageJsonPath)
         const externals = [...sharedMain, ...sharedProject]
 
-        const importMapPath = "./dist/modules/" + this.modulePath + "/importmap.json"
+        let distDir = "./dist/modules/" + this.modulePath;
+
+        fs.mkdirSync(distDir, {recursive: true})
+        const importMapPath = distDir + "/importmap.json"
 
         const sb = new SharedBuilder(externals)
         const sharedInfos = await sb.build()
