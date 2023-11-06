@@ -53,7 +53,6 @@ export class BootstrapBuilder implements BuilderInterface<any> {
         this.indexTs = this.htmlInject(outputIndexHtmlFile, sharedInfos);
 
         await this.buildEsbuild(this.outputPath, this.indexTs);
-        return await this.genModulesJson();
     }
 
     loadEntryModules() {
@@ -125,35 +124,6 @@ export class BootstrapBuilder implements BuilderInterface<any> {
 
 
 
-
-
-    async genModulesJson() {
-        const modulesNames = this.loadEntryModules()
-
-        const modulesLinks = await loadListMicroFrontends();
-        const modulesMapping: {
-            [key: string]: string
-        } = {};
-        for (const cid in modulesLinks) {
-            console.log("CID", cid)
-            for (const moduleName of modulesNames) {
-                if (moduleName == modulesLinks[cid].name) {
-                    const cidURL = ipfsUrl + "/ipns/" + cid + "/"
-                    const importMap=await fetchImportMap(cidURL)
-                    modulesMapping[moduleName] = cidURL + importMap[moduleName];
-                }
-            }
-        }
-
-
-        const fs = require('fs');
-        const dir = this.outputPath;
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-        }
-
-        fs.writeFileSync(this.outputPath + "/modules.json", JSON.stringify(modulesMapping), 'utf8');
-    }
 
     copyFiles(): string {
 
