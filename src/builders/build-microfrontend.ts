@@ -1,6 +1,6 @@
 import {BuilderInterface, PACKAGE_JSON, Result, SharedInfo} from "../types";
 import {extractSharedFromPackageJson} from "../toots/extractors";
-import fs from "fs";
+import fs, {rmdir} from "fs";
 import {bundleMain} from "../bundles/bundle-main";
 import {BuildResult} from "esbuild";
 import {SharedBuilder} from "./build-shared";
@@ -28,6 +28,8 @@ export class MicroFrontendBuilder implements BuilderInterface<Result[]> {
 
         let distDir = "./dist/modules/" + this.modulePath;
 
+        console.log("REMOVE DIR", distDir)
+        fs.rmdirSync(distDir, {recursive: true})
         fs.mkdirSync(distDir, {recursive: true})
         const importMapPath = distDir + "/importmap.json"
 

@@ -46,6 +46,7 @@ export class BootstrapBuilder implements BuilderInterface<any> {
     }
 
     async build(): Promise<any> {
+        fs.rmdirSync(this.outputPath,{recursive: true})
         const externals = extractSharedFromPackageJson("./" + PACKAGE_JSON)
         const sb = new SharedBuilder(externals)
         const sharedInfos = await sb.build()
