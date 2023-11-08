@@ -1,14 +1,14 @@
 {
   "name": "@solenopsys/build-federation",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "Build federation",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Solenopsys",
   "peerDependencies": {
-    "@angular-devkit/build-angular": "^16.2.8",
-    "@angular/compiler-cli": "^16.2.11",
+    "@angular-devkit/build-angular": "^17.0.0",
+    "@angular/compiler-cli": "^17.0.0",
     "@babel/core": "^7.22.11",
     "@types/node": "^20.8.9"
   },
@@ -23,8 +23,8 @@
     "typescript": "5.1.6"
   },
   "dependencies": {
-    "@angular-devkit/architect": "^0.1602.8",
-    "@angular-devkit/core": "^16.2.8",
+    "@angular-devkit/architect": "^0.1700.0",
+    "@angular-devkit/core": "^17.0.0",
     "jsdom": "^22.1.0",
     "node-fetch": "^3.3.2"
   }
