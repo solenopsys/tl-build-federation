@@ -10,7 +10,7 @@ export function extractParamsFromNodeModule(packageName: string): { version: str
     let nodeModule = "./node_modules/";
     let packageJson = "/package.json";
     let splitStrings = packageName.split("/");
-    const subPackage = splitStrings.length === 3
+    const subPackage = splitStrings.length >= 3
 
     const nodeDir =  nodeModule + (subPackage?splitStrings[0]+"/"+splitStrings[1]:packageName)
     let pathToPackageJson = nodeDir + packageJson;
@@ -30,7 +30,7 @@ export function extractParamsFromNodeModule(packageName: string): { version: str
         let file= path.join(nodeDir, extract.module) ;
         if (subPackage){
             if( extract.exports){
-                let subDirectory = splitStrings[2];
+                let subDirectory =  splitStrings.slice(2).join("/") ;
                 const fn = extract.exports["./"+subDirectory]["default"]
                 file=path.join(nodeDir, fn) ;
             }else{
@@ -38,7 +38,6 @@ export function extractParamsFromNodeModule(packageName: string): { version: str
                 let extracts = extractFromPackageJson(subDir+packageJson);
                 file=path.join(subDir, extracts.module) ;
             }
-
         }
         return {
             version: extract.version,

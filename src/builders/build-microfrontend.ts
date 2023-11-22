@@ -1,13 +1,11 @@
-import {BuilderInterface, PACKAGE_JSON, Result, SharedInfo} from "../types";
+import {BuilderInterface, PACKAGE_JSON, Result} from "../types";
 import {extractSharedFromPackageJson} from "../toots/extractors";
-import fs, {rmdir} from "fs";
+import fs from "fs";
 import {bundleMain} from "../bundles/bundle-main";
-import {BuildResult} from "esbuild";
 import {SharedBuilder} from "./build-shared";
 import {BundleController} from "../toots/bundle-controller";
 import {externalConvert} from "../toots/external-converter";
 import {sharedInfosToImportMapJson} from "../toots/convertors";
-
 
 
 export class MicroFrontendBuilder implements BuilderInterface<Result[]> {
@@ -28,8 +26,12 @@ export class MicroFrontendBuilder implements BuilderInterface<Result[]> {
 
         let distDir = "./dist/modules/" + this.modulePath;
 
-        console.log("REMOVE DIR", distDir)
-        fs.rmdirSync(distDir, {recursive: true})
+
+        if (fs.existsSync(distDir)) {
+            console.log("REMOVE DIR", distDir)
+            fs.rmdirSync(distDir, {recursive: true})
+        }
+
         fs.mkdirSync(distDir, {recursive: true})
         const importMapPath = distDir + "/importmap.json"
 

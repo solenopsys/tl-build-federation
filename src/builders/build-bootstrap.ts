@@ -1,5 +1,3 @@
-import http from "http";
-import * as https from "https";
 import * as esbuild from "esbuild";
 import jsdom from "jsdom";
 import fs from "fs";
@@ -7,8 +5,6 @@ import {BuilderInterface, PACKAGE_JSON, SharedInfo} from "../types";
 import {extractSharedFromPackageJson} from "../toots/extractors";
 import {SharedBuilder} from "./build-shared";
 import {sharedInfosToImportMapJson} from "../toots/convertors";
-import {loadListMicroFrontends} from "../toots/pinning";
-import {fetchImportMap, ipfsUrl} from "../toots/ipfs";
 
 const {JSDOM} = jsdom;
 const indexHtml = "index.html";
@@ -38,15 +34,18 @@ export class BootstrapBuilder implements BuilderInterface<any> {
     indexTs: string
 
     constructor(private moduleName: string) {
-        this.outputPath = distDir + moduleName
-        this.srcPath = "./" + baseName + "/" + moduleName
+        const modPath=moduleName.replace("@", "")
+        this.outputPath = distDir + modPath
+        this.srcPath = "./" + baseName + "/" + modPath
         this.srcEntry = this.srcPath + "/" + entryJson;
         this.distEntry = this.outputPath + "/" + entryJson;
 
     }
 
     async build(): Promise<any> {
-        fs.rmdirSync(this.outputPath,{recursive: true})
+        if (fs.existsSync(this.outputPath)) {
+            fs.rmdirSync(this.outputPath,{recursive: true})
+        }
         const externals = extractSharedFromPackageJson("./" + PACKAGE_JSON)
         const sb = new SharedBuilder(externals)
         const sharedInfos = await sb.build()
